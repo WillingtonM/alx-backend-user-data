@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-    Module for handling Personal Data
+"""Module for handling Personal Data
 """
 from typing import List
 import re
@@ -14,8 +13,7 @@ PII_FIELDS = ("name", "email", "phone", "ssn", "password")
 
 def filter_datum(fields: List[str], redaction: str,
                  message: str, separator: str) -> str:
-    """
-        Filters log line
+    """Filters log line
     """
     for fld in fields:
         msg = re.sub(f'{fld}=.*?{separator}',
@@ -24,8 +22,7 @@ def filter_datum(fields: List[str], redaction: str,
 
 
 def get_logger() -> logging.Logger:
-    """
-        Returns a logging.Logger object
+    """Returns a logging.Logger object
     """
     logg = logging.getLogger("user_data")
     logg.setLevel(logging.INFO)
@@ -39,8 +36,7 @@ def get_logger() -> logging.Logger:
 
 
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    """
-        Creates connector to database
+    """Creates connector to database
     """
     host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
     password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
@@ -55,8 +51,7 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
 
 
 def main():
-    """
-        Logs information about user records in table
+    """Logs information about user records in table
     """
     db_conn = get_db()
     db_curs = db_conn.cursor()
@@ -74,8 +69,7 @@ def main():
 
 
 class RedactingFormatter(logging.Formatter):
-    """
-        The Redacting Formatter class
+    """The Redacting Formatter class
     """
 
     SEPARATOR = ";"
