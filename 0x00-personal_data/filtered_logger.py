@@ -2,13 +2,76 @@
 """
     Module for handling Personal Data
 """
-import re
 from typing import List
+import re
 import logging
+from os import environ
 import mysql.connector
-import os
 
-PII_FIELDS = ("name", "email", "password", "ssn", "phone")
+
+
+PII_FIELDS = ("name", "email", "phone", "ssn", "password")
+
+
+def filter_datum(fields: List[str], redaction: str,
+                 message: str, separator: str) -> str:
+    """
+        Filters log line
+    """
+    for fld in fields:
+        msg = re.sub(f'{fld}=.*?{separator}',
+                         f'{fld}={redaction}{separator}', message)
+    return msg
+
+
+def get_logger() -> logging.Logger:
+    """
+        Returns a logging.Logger object
+    """
+    logg = logging.getLogger("user_data")
+    logg.setLevel(logging.INFO)
+    logg.propagate = False
+
+    handle_stream = logging.StreamHandler()
+    handle_stream.setFormatter(RedactingFormatter(list(PII_FIELDS)))
+    logg.addHandler(handle_stream)
+
+    return logg
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """
+        Creates connector to database
+    """
+    host = environ.get("PERSONAL_DATA_DB_HOST", "localhost")
+    password = environ.get("PERSONAL_DATA_DB_PASSWORD", "")
+    db_name = environ.get("PERSONAL_DATA_DB_NAME")
+    username = environ.get("PERSONAL_DATA_DB_USERNAME", "root")
+
+    db_conn = mysql.connector.connection.MySQLConnection(user=username,
+                                                     password=password,
+                                                     host=host,
+                                                     database=db_name)
+    return db_conn
+
+
+def main():
+    """
+        Logs information about user records in table
+    """
+    db_conn = get_db()
+    db_curs = db_conn.cursor()
+    db_curs.execute("SELECT * FROM users;")
+    field_names = [i[0] for i in db_curs.description]
+
+    logger = get_logger()
+
+    for row in db_curs:
+        str_row = ''.join(f'{f}={str(r)}; ' for r, f in zip(row, field_names))
+        logger.info(str_row.strip())
+
+    db_curs.close()
+    db_conn.close()
 
 
 class RedactingFormatter(logging.Formatter):
@@ -25,69 +88,10 @@ class RedactingFormatter(logging.Formatter):
         self.fields = fields
 
     def format(self, record: logging.LogRecord) -> str:
-        """
-            formats a LogRecord
-        """
-        return filter_datum(self.fields, self.REDACTION,
-                            super().format(record), self.SEPARATOR)
-
-
-def get_db() -> mysql.connector.connection.MYSQLConnection:
-    """
-        Creates connector to database
-    """
-    conn_db = mysql.connector.connect(
-        user=os.getenv('PERSONAL_DATA_DB_USERNAME', 'root'),
-        password=os.getenv('PERSONAL_DATA_DB_PASSWORD', ''),
-        host=os.getenv('PERSONAL_DATA_DB_HOST', 'localhost'),
-        database=os.getenv('PERSONAL_DATA_DB_NAME')
-    )
-    return conn_db
-
-
-def filter_datum(fields: List[str], redaction: str, message: str,
-                 separator: str) -> str:
-    """
-        Filters log line
-    """
-    for fld in fields:
-        msg = re.sub(f'{fld}=(.*?){separator}',
-                     f'{fld}={redaction}{separator}', message)
-    return msg
-
-
-def get_logger() -> logging.Logger:
-    """
-        Returns a logging.Logger object
-    """
-    logg = logging.getLogger("user_data")
-    handle_stream = logging.StreamHandler()
-    handle_stream.setFormatter(RedactingFormatter(PII_FIELDS))
-    logg.setLevel(logging.INFO)
-    logg.propagate = False
-    logg.addHandler(handle_stream)
-    return logg
-
-
-def main() -> None:
-    """
-        Logs information about user records in table
-    """
-    db_conn = get_db()
-    db_curs = db_conn.cursor()
-    db_curs.execute("SELECT * FROM users;")
-
-    heads = [field[0] for field in db_curs.description]
-    loggr = get_logger()
-
-    for row in db_curs:
-        info_answer = ''
-        for f, p in zip(row, heads):
-            info_answer += f'{p}={(f)}; '
-        loggr.info(info_answer)
-
-    db_curs.close()
-    db_conn.close()
+        """ Filters values in incoming log records using filter_datum """
+        record.msg = filter_datum(self.fields, self.REDACTION,
+                                  record.getMessage(), self.SEPARATOR)
+        return super(RedactingFormatter, self).format(record)
 
 
 if __name__ == '__main__':
