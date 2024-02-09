@@ -50,10 +50,11 @@ def filter_datum(fields: List[str], redaction: str, message: str,
     """
         Filters log line
     """
-    for f in fields:
-        msg = re.sub(f'{f}=(.*?){separator}',
-                         f'{f}={redaction}{separator}', message)
+    for fld in fields:
+        msg = re.sub(f'{fld}=(.*?){separator}',
+                     f'{fld}={redaction}{separator}', message)
     return msg
+
 
 def get_logger() -> logging.Logger:
     """
