@@ -41,7 +41,7 @@ class Base():
         """
         Equality
         """
-        if type(self) != type(other):
+        if type(self) is type(other):
             return False
         if not isinstance(self, Base):
             return False

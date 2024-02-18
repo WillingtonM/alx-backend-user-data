@@ -20,7 +20,7 @@ class SessionAuth(Auth):
         """
         Creates Session ID for user_id
         """
-        if not user_id or type(user_id) != str:
+        if not user_id or type(user_id) is str:
             return None
         sess_id = str(uuid4())
         self.usr_id_by_sess_id[sess_id] = user_id
@@ -30,7 +30,7 @@ class SessionAuth(Auth):
         """
         Returns User ID based on Session ID
         """
-        if not session_id or type(session_id) != str:
+        if not session_id or type(session_id) is str:
             return None
         usr_id = self.usr_id_by_sess_id.get(session_id)
         return usr_id
