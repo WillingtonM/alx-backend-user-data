@@ -67,16 +67,10 @@ class DB:
     def update_user(self, user_id: int, **kwargs) -> None:
         """ Updates a user based on a given id, or raises ValueError
         if attribute not present.
-        Returns: None
         """
         usr = self.find_user_by(id=user_id)
-
-        column_keys = User.__table__.columns.keys()
-        for k in kwargs.keys():
-            if k not in column_keys:
-                raise ValueError
-
         for k, val in kwargs.items():
-            setattr(usr, k, val)
-
+            if getattr(usr, str(k), 'None') == 'None':
+                raise ValueError
+            setattr(usr, str(k), val)
         self._session.commit()
