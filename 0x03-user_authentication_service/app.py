@@ -77,7 +77,6 @@ def get_reset_password_token() -> str:
     """
     email = request.form.get("email")
     token_reset = None
-    
     try:
         token_reset = AUTH.get_reset_password_token(email)
     except ValueError:
@@ -92,9 +91,13 @@ def update_password():
     """ Update password
     Return: User's password updated payload.
     """
-    email = request.form.get('email')
-    reset_token = request.form.get('reset_token')
-    new_password = request.form.get('new_password')
+    try:
+        email = request.form['email']
+        reset_token = request.form['reset_token']
+        new_password = request.form['new_password']
+    except KeyError:
+        abort(400)
+    
     try:
         AUTH.update_password(reset_token, new_password)
         return jsonify({"email": email, "message": "Password updated"}), 200
