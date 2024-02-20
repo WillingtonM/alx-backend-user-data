@@ -45,18 +45,19 @@ def login() -> str:
         abort(401)
 
 
-@app.route('/sessions', methods=['DELETE'])
+@app.route('/sessions', methods=['DELETE'], strict_slashes=False)
 def logout() -> str:
     """ Finds user associated with session_id, if exists destroy session
     Returns: Redirects to home route, if doesn't exist raise 403 error
     """
-    sess_id = request.cookies.get("session_id")
+    sess_id = request.cookies.get('session_id')
     usr = AUTH.get_user_from_session_id(sess_id)
-    if usr is None:
-        abort(403)
-    AUTH.destroy_session(usr.id)
-    return redirect("/")
 
+    if usr:
+        AUTH.destroy_session(usr.id)
+        return redirect('/')
+    else:
+        abort(403)
 
 
 @app.route('/profile', methods=['GET'])
