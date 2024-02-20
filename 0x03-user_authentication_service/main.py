@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Simple end-to-end (E2E) integration.
+""" Simple end-to-end (E2E) integration.
 """
 import requests
 
@@ -12,8 +11,7 @@ NEW_PASSWD = "t4rt1fl3tt3"
 
 
 def register_user(email: str, password: str) -> None:
-    """
-    Tests register a user.
+    """ Tests register a user.
     """
     req_url = "{}/users".format(BASE_URL)
     data = {
@@ -31,8 +29,7 @@ def register_user(email: str, password: str) -> None:
 
 
 def log_in_wrong_password(email: str, password: str) -> None:
-    """
-    Test for validating log in with wrong password.
+    """ Test for validating log in with wrong password.
     """
     req_url = "{}/sessions".format(BASE_URL)
     data = {
@@ -44,8 +41,7 @@ def log_in_wrong_password(email: str, password: str) -> None:
 
 
 def log_in(email: str, password: str) -> str:
-    """
-    Test for validating log in.
+    """ Test for validating log in.
     """
     req_url = "{}/sessions".format(BASE_URL)
     data = {
@@ -59,8 +55,7 @@ def log_in(email: str, password: str) -> str:
 
 
 def profile_unlogged() -> None:
-    """
-    Test for validating profile request without log in.
+    """ Test for validating profile request without log in.
     """
     req_url = "{}/profile".format(BASE_URL)
     res = requests.get(req_url)
@@ -68,8 +63,7 @@ def profile_unlogged() -> None:
 
 
 def profile_logged(session_id: str) -> None:
-    """
-    Tests retrieving profile information whilst logged in.
+    """ Tests retrieving profile information whilst logged in.
     """
     req_url = "{}/profile".format(BASE_URL)
     req_cookies = {
@@ -81,8 +75,7 @@ def profile_logged(session_id: str) -> None:
 
 
 def log_out(session_id: str) -> None:
-    """
-    Tests logging out from session.
+    """ Tests logging out from session.
     """
     req_url = "{}/sessions".format(BASE_URL)
     req_cookies = {
@@ -94,8 +87,7 @@ def log_out(session_id: str) -> None:
 
 
 def reset_password_token(email: str) -> str:
-    """
-    Test for validating password reset.
+    """ Test for validating password reset.
     """
     req_url = "{}/reset_password".format(BASE_URL)
     data = {'email': email}
