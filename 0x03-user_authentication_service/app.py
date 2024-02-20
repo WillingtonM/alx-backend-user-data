@@ -73,11 +73,11 @@ def profile():
 
 @app.route("/reset_password", methods=["POST"], strict_slashes=False)
 def get_reset_password_token() -> str:
-    """ Reset password
-    Returns: User's password reset payload.
+    """ Update user password
     """
     email = request.form.get("email")
     token_reset = None
+    
     try:
         token_reset = AUTH.get_reset_password_token(email)
     except ValueError:
