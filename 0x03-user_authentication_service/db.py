@@ -46,17 +46,21 @@ class DB:
         return usr
 
     def find_user_by(self, **kwargs) -> User:
-        """ Filters for user using kwargs
-        returns: the user
+        """ Filters for user utilizing kwargs
+        returns: user
         """
-        usr_keys = ['id', 'email', 'hashed_password', 'session_id',
-                     'reset_token']
-        for k in kwargs.keys():
-            if k not in usr_keys:
-                raise InvalidRequestError
-        res = self._session.query(User).filter_by(**kwargs).first()
+        flds, vals = [], []
+        for k, val in kwargs.items():
+            if hasattr(User, k):
+                flds.append(getattr(User, k))
+                vals.append(val)
+            else:
+                raise InvalidRequestError()
+        res = self._session.query(User).filter(
+            tuple_(*flds).in_([tuple(vals)])
+        ).first()
         if res is None:
-            raise NoResultFound
+            raise NoResultFound()
         return res
 
     def update_user(self, user_id: int, **kwargs) -> None:
