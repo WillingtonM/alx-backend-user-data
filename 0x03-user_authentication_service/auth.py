@@ -82,8 +82,7 @@ class Auth:
             return None
 
     def destroy_session(self, user_id: int) -> None:
-        """
-        Destroys session associated with given user
+        """ Destroys session associated with given user
         Returns: user corresponding to user_id as None
         """
         try:
@@ -94,8 +93,7 @@ class Auth:
         return None
 
     def get_reset_password_token(self, email: str) -> str:
-        """
-        Updates user's password given user's reset token
+        """ Updates user's password given user's reset token
         or raise a ValueError exception if user doesn't exists
         """
         try:
@@ -105,3 +103,23 @@ class Auth:
             return usr.reset_token
         except Exception as e:
             raise ValueError
+
+    def update_password(self, reset_token: str, password: str) -> None:
+        """ Update password
+        Param:
+            reset_token - Reset token
+            password - Password of user
+        returns: None
+        """
+        if reset_token is None or password is None:
+            return None
+
+        try:
+            usr = self._db.find_user_by(reset_token=reset_token)
+        except NoResultFound:
+            raise ValueError
+
+        hashed_pwd = _hash_password(password)
+        self._db.update_user(usr.id,
+                             hashed_password=hashed_pwd,
+                             reset_token=None)
