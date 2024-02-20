@@ -46,22 +46,23 @@ class DB:
         return usr
 
     def find_user_by(self, **kwargs) -> User:
-        """ Filters for user utilizing kwargs
-        returns: user
+        """ Filters for user using kwargs
+        returns: the user
         """
-        flds, vals = [], []
-        for k, val in kwargs.items():
-            if hasattr(User, k):
-                flds.append(getattr(User, k))
-                vals.append(val)
-            else:
-                raise InvalidRequestError()
-        res = self._session.query(User).filter(
-            tuple_(*flds).in_([tuple(vals)])
-        ).first()
-        if res is None:
-            raise NoResultFound()
-        return res
+        if not kwargs:
+            raise InvalidRequestError
+
+        column_keys = User.__table__.columns.keys()
+        for k in kwargs.keys():
+            if k not in column_keys:
+                raise InvalidRequestError
+
+        usr = self._session.query(User).filter_by(**kwargs).first()
+
+        if usr is None:
+            raise NoResultFound
+
+        return usr
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """ Updates a user based on a given id, or raises ValueError
