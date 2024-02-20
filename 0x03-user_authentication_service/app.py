@@ -34,15 +34,13 @@ def login() -> str:
     """ Creates new session for user & stores in cookie
     returns account login payload
     """
-    password = request.form.get('password')
-    email = request.form.get('email')
-    if AUTH.valid_login(email, password):
-        sess_id = AUTH.create_session(email)
-        resp = jsonify({"email": email, "message": "logged in"})
-        resp.set_cookie("session_id", sess_id)
-        return resp
-    else:
+    email, password = request.form.get("email"), request.form.get("password")
+    if not AUTH.valid_login(email, password):
         abort(401)
+    sess_id = AUTH.create_session(email)
+    respons = jsonify({"email": email, "message": "logged in"})
+    respons.set_cookie("session_id", sess_id)
+    return respons
 
 
 @app.route('/sessions', methods=['DELETE'], strict_slashes=False)
@@ -90,6 +88,7 @@ def get_reset_password_token() -> str:
 @app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def update_password() -> str:
     """ Update password
+    Return: User's password updated payload.
     """
     try:
         email = request.form.get('email')
