@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Module contains authentication methods for users
+""" Module contains authentication methods for users
 """
 import bcrypt
 from db import DB
@@ -12,8 +11,7 @@ from typing import Optional
 
 
 def _hash_password(password: str) -> bytes:
-    """
-    Takes in password argument
+    """ Takes in password argument
     Returns: bytes which are salted hash of input
     """
     bytes_pass = password.encode()
@@ -22,19 +20,16 @@ def _hash_password(password: str) -> bytes:
 
 
 class Auth:
-    """
-    Auth class to interact with authentication database.
+    """ Auth class to interact with authentication database.
     """
 
     def __init__(self):
-        """
-        Initialize instances of authentication
+        """ Initialize instances of authentication
         """
         self._db = DB()
 
     def register_user(self, email: str, password: str) -> User:
-        """
-        Adds a new user to the database
+        """ Adds a new user to the database
         Returns: user, if user already exists raise ValueError
         """
         try:
@@ -46,8 +41,7 @@ class Auth:
             return usr
 
     def valid_login(self, email: str, password: str) -> bool:
-        """
-        Checks if a user's login details are correct and valid
+        """ Checks if a user's login details are correct and valid
         Returns: True otherwise False
         """
         try:
@@ -60,15 +54,13 @@ class Auth:
             return False
 
     def _generate_uuid(self) -> str:
-        """
-        Generates a UUID
+        """ Generates a UUID
         Returns: string representation
         """
         return str(uuid4())
 
     def create_session(self, email: str) -> Optional[str]:
-        """
-        Creates new session for user
+        """ Creates new session for user
         Returns: session id
         """
         try:
@@ -80,8 +72,7 @@ class Auth:
             return None
 
     def get_user_from_session_id(self, session_id: str) -> Optional[User]:
-        """
-        Retrieves user based on given session ID
+        """ Retrieves user based on given session ID
         Returns: user in session_id or None if not found
         """
         try:

@@ -10,16 +10,14 @@ AUTH = Auth()
 
 @app.route('/', methods=['GET'])
 def index() -> str:
-    """
-    Index route that returns json paylod
+    """ Index route that returns json paylod
     """
     return jsonify({"message": "Bienvenue"})
 
 
 @app.route('/users', methods=['POST'])
 def users() -> str:
-    """
-    Registers a user using AUTH
+    """ Registers a user using AUTH
     returns: Account creation payload
     """
     password = request.form.get('password')
@@ -33,8 +31,7 @@ def users() -> str:
 
 @app.route('/sessions', methods=['POST'])
 def login() -> str:
-    """
-    Creates new session for user & stores in cookie
+    """ Creates new session for user & stores in cookie
     returns account login payload
     """
     password = request.form.get('password')
@@ -50,8 +47,7 @@ def login() -> str:
 
 @app.route('/sessions', methods=['DELETE'])
 def logout() -> str:
-    """
-    Finds user associated with session_id if, exists destroy session
+    """ Finds user associated with session_id if, exists destroy session
     Returns: Redirects to home route, if doesn't exist raise 403 error
     """
     sess_id = request.cookies.get("session_id")
@@ -64,8 +60,7 @@ def logout() -> str:
 
 @app.route('/profile', methods=['GET'])
 def profile():
-    """
-    Finds user if existing in session or abort
+    """ Finds user if existing in session or abort
     """
     sess_id = request.cookies.get('session_id')
     usr = AUTH.get_user_from_session_id(sess_id)
@@ -76,8 +71,7 @@ def profile():
 
 @app.route("/reset_password", methods=["POST"], strict_slashes=False)
 def get_reset_password_token() -> str:
-    """
-    Reset password
+    """ Reset password
     Returns: User's password reset payload.
     """
     email = request.form.get("email")
@@ -93,8 +87,7 @@ def get_reset_password_token() -> str:
 
 @app.route("/reset_password", methods=["PUT"], strict_slashes=False)
 def update_password() -> str:
-    """
-    Update password
+    """ Update password
     Return: User's password updated payload.
     """
     email = request.form.get("email")

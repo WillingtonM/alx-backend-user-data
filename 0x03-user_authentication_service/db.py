@@ -1,5 +1,4 @@
-"""
-DB module that connects & intializes database
+"""DB module that connects & intializes database
 """
 from sqlalchemy import create_engine, tuple_
 from sqlalchemy.ext.declarative import declarative_base
@@ -16,7 +15,7 @@ class DB:
     """
 
     def __init__(self) -> None:
-        """Initialize new DB instance
+        """Initialize instance of new DB 
         """
         self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
@@ -33,8 +32,7 @@ class DB:
         return self.__session
 
     def add_user(self, email: str, hashed_password: str) -> User:
-        """
-        Uses email and hashed password to create new user
+        """ Uses email and hashed password to create new user
         Returns: user
         """
         try:
@@ -47,8 +45,7 @@ class DB:
         return usr
 
     def find_user_by(self, **kwargs) -> User:
-        """
-        Filters for user utilizing kwargs
+        """ Filters for user utilizing kwargs
         returns: user
         """
         flds, vals = [], []
@@ -66,8 +63,7 @@ class DB:
         return res
 
     def update_user(self, user_id: int, **kwargs) -> None:
-        """
-        Updates a user based on a given id, or raises ValueError
+        """ Updates a user based on a given id, or raises ValueError
         if attribute not present.
         """
         usr = self.find_user_by(id=user_id)

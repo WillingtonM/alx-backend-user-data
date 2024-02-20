@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Model User definitio for database using SQLAlchemy
+""" Model User definitio for database using SQLAlchemy
 """
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
@@ -10,8 +9,7 @@ Base = declarative_base()
 
 
 class User(Base):
-    """
-    Represents User class mapping to table users
+    """ Represents User class mapping to table users
     """
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
