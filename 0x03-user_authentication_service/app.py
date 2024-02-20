@@ -92,14 +92,19 @@ def update_password() -> str:
     """ Update password
     Return: User's password updated payload.
     """
-    email = request.form.get("email")
-    token_reset = request.form.get("reset_token")
-    password_new = request.form.get("new_password")
+    try:
+        email = request.form.get('email')
+        token_reset = request.form.get('reset_token')
+        password_new = request.form.get('new_password')
+    except KeyError:
+        abort(400)
+
     try:
         AUTH.update_password(token_reset, password_new)
     except ValueError:
         abort(403)
-    return jsonify({"email": email, "message": "Password updated"})
+    else:
+        return jsonify({"email": email, "message": "Password updated"})
 
 
 if __name__ == "__main__":
