@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """DB module that connects & intializes database
 """
 from sqlalchemy import create_engine, tuple_
