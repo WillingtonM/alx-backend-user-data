@@ -15,7 +15,7 @@ class DB:
     """
 
     def __init__(self) -> None:
-        """Initialize instance of new DB 
+        """ Initialize instance of new DB
         """
         self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
