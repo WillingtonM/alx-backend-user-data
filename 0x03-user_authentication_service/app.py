@@ -34,13 +34,15 @@ def login() -> str:
     """ Creates new session for user & stores in cookie
     returns account login payload
     """
-    email, password = request.form.get("email"), request.form.get("password")
-    if not AUTH.valid_login(email, password):
+    password = request.form.get('password')
+    email = request.form.get('email')
+    if AUTH.valid_login(email, password):
+        sess_id = AUTH.create_session(email)
+        resp = jsonify({"email": email, "message": "logged in"})
+        resp.set_cookie("session_id", sess_id)
+        return resp
+    else:
         abort(401)
-    sess_id = AUTH.create_session(email)
-    respons = jsonify({"email": email, "message": "logged in"})
-    respons.set_cookie("session_id", sess_id)
-    return respons
 
 
 @app.route('/sessions', methods=['DELETE'], strict_slashes=False)
@@ -49,13 +51,13 @@ def logout() -> str:
     Returns: Redirects to home route, if doesn't exist raise 403 error
     """
     sess_id = request.cookies.get('session_id')
-    usr = AUTH.get_user_from_session_id(sess_id)
-
-    if usr:
-        AUTH.destroy_session(usr.id)
-        return redirect('/')
-    else:
+    if not sess_id:
         abort(403)
+    usr = AUTH.get_user_from_session_id(sess_id)
+    if not usr:
+        abort(403)
+    AUTH.destroy_session(usr.id)
+    return redirect(url_for('home'))
 
 
 @app.route('/profile', methods=['GET'])
