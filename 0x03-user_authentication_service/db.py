@@ -67,7 +67,7 @@ class DB:
 
     def update_user(self, user_id: int, **kwargs) -> None:
         """
-        Updates a user based on a given id, or raises ValueError 
+        Updates a user based on a given id, or raises ValueError
         if attribute not present.
         """
         usr = self.find_user_by(id=user_id)

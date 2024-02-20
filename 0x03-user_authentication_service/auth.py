@@ -28,7 +28,7 @@ class Auth:
 
     def __init__(self):
         """
-        Initialize instances of authentication 
+        Initialize instances of authentication
         """
         self._db = DB()
 
@@ -82,7 +82,7 @@ class Auth:
     def get_user_from_session_id(self, session_id: str) -> Optional[User]:
         """
         Retrieves user based on given session ID
-        Returns: user in session_id or None if not found 
+        Returns: user in session_id or None if not found
         """
         try:
             usr = self._db.find_user_by(session_id=session_id)
