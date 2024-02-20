@@ -12,11 +12,11 @@ from user import Base
 
 
 class DB:
-    """DB class
+    """ DB class
     """
 
     def __init__(self) -> None:
-        """Initialize a new DB instance
+        """ Initialize a new DB instance
         """
         self._engine = create_engine("sqlite:///a.db", echo=True)
         Base.metadata.drop_all(self._engine)
@@ -46,21 +46,17 @@ class DB:
         return usr
 
     def find_user_by(self, **kwargs) -> User:
-        """ Filters for user utilizing kwargs
-        returns: user
+        """ Filters for user using kwargs
+        returns: the user
         """
-        flds, vals = [], []
-        for k, val in kwargs.items():
-            if hasattr(User, k):
-                flds.append(getattr(User, k))
-                vals.append(val)
-            else:
-                raise InvalidRequestError()
-        res = self._session.query(User).filter(
-            tuple_(*flds).in_([tuple(vals)])
-        ).first()
+        usr_keys = ['id', 'email', 'hashed_password', 'session_id',
+                     'reset_token']
+        for k in kwargs.keys():
+            if k not in usr_keys:
+                raise InvalidRequestError
+        res = self._session.query(User).filter_by(**kwargs).first()
         if res is None:
-            raise NoResultFound()
+            raise NoResultFound
         return res
 
     def update_user(self, user_id: int, **kwargs) -> None:
