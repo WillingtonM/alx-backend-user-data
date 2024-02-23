@@ -25,32 +25,28 @@ if authentic:
 
 @app.errorhandler(404)
 def not_found(error) -> str:
-    """
-    Not found handler
+    """ Not found handler
     """
     return jsonify({"error": "Not found"}), 404
 
 
 @app.errorhandler(401)
 def unauthorized(error) -> str:
-    """
-    Unauthorized access handle
+    """ Unauthorized access handle
     """
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
 def not_allowed(error) -> str:
-    """
-    Not allowed access handle
+    """ Not allowed access handle
     """
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def auth_filter():
-    """
-    Filtering each request: authentication purposes
+    """ Filtering each request: authentication purposes
     """
     exclude_list = ['/api/v1/status/', '/api/v1/unauthorized/',
                     '/api/v1/forbidden/']

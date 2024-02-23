@@ -13,6 +13,7 @@ class BasicAuth(Auth):
     """
     Contains BasicAuth implementation
     """
+
     def extract_base64_authorization_header(
             self, authorization_header: str) -> Optional[str]:
         """

@@ -8,7 +8,7 @@ import uuid
 from os import path
 
 
-TMSTMP_FMT = "%Y-%m-%dT%H:%M:%S"
+TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DTA = {}
 
 
@@ -28,43 +28,40 @@ class Base():
         self.id = kwargs.get('id', str(uuid.uuid4()))
         if kwargs.get('created_at') is not None:
             self.created_at = datetime.strptime(kwargs.get('created_at'),
-                                                TMSTMP_FMT)
+                                                TIMESTAMP_FORMAT)
         else:
             self.created_at = datetime.utcnow()
         if kwargs.get('updated_at') is not None:
             self.updated_at = datetime.strptime(kwargs.get('updated_at'),
-                                                TMSTMP_FMT)
+                                                TIMESTAMP_FORMAT)
         else:
             self.updated_at = datetime.utcnow()
 
     def __eq__(self, other: TypeVar('Base')) -> bool:
+        """ Equality
         """
-        Equality
-        """
-        if type(self) != type(other):
+        if type(self) is type(other):
             return False
         if not isinstance(self, Base):
             return False
         return (self.id == other.id)
 
     def to_json(self, for_serialization: bool = False) -> dict:
-        """
-        Convert object JSON dictionary
+        """ Convert object JSON dictionary
         """
         res = {}
         for k, val in self.__dict__.items():
             if not for_serialization and k[0] == '_':
                 continue
             if type(val) is datetime:
-                res[k] = val.strftime(TMSTMP_FMT)
+                res[k] = val.strftime(TIMESTAMP_FORMAT)
             else:
                 res[k] = val
         return res
 
     @classmethod
     def load_from_file(cls):
-        """
-        Load objects from file
+        """ Load objects from file
         """
         bs_class = cls.__name__
         fl_pth = ".db_{}.json".format(bs_class)
@@ -79,8 +76,7 @@ class Base():
 
     @classmethod
     def save_to_file(cls):
-        """
-        Save objects to file
+        """ Save objects to file
         """
         bs_class = cls.__name__
         fl_pth = ".db_{}.json".format(bs_class)
@@ -92,8 +88,7 @@ class Base():
             json.dump(objs_json, f)
 
     def save(self):
-        """
-        Save current object
+        """ Save current object
         """
         bs_class = self.__class__.__name__
         self.updated_at = datetime.utcnow()
@@ -101,8 +96,7 @@ class Base():
         self.__class__.save_to_file()
 
     def remove(self):
-        """
-        Remove object
+        """ Remove object
         """
         bs_class = self.__class__.__name__
         if DTA[bs_class].get(self.id) is not None:
@@ -111,8 +105,7 @@ class Base():
 
     @classmethod
     def count(cls) -> int:
-        """
-        Count objects
+        """ Count objects
         """
         bs_class = cls.__name__
         return len(DTA[bs_class].keys())
@@ -125,16 +118,14 @@ class Base():
 
     @classmethod
     def get(cls, id: str) -> TypeVar('Base'):
-        """
-        Return object by ID
+        """ Return object by ID
         """
         bs_class = cls.__name__
         return DTA[bs_class].get(id)
 
     @classmethod
     def search(cls, attributes: dict = {}) -> List[TypeVar('Base')]:
-        """
-        Search objects with matching attributes
+        """ Search objects with matching attributes
         """
         bs_class = cls.__name__
 
