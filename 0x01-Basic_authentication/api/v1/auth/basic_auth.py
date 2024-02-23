@@ -21,7 +21,7 @@ class BasicAuth(Auth):
         """ Function base64 part of authorization header for:
         Basic authentication.
         """
-        if type(authorization_header) == str:
+        if type(authorization_header) is str:
             pttn = r'Basic (?P<token>.+)'
             match_fld = re.fullmatch(pttn, authorization_header.strip())
             if match_fld is not None:
@@ -35,7 +35,7 @@ class BasicAuth(Auth):
         """Function returns decoded value of Base64 string of
         base64_authorization_header.
         """
-        if type(base64_authorization_header) == str:
+        if type(base64_authorization_header) is str:
             try:
                 reslt = base64.b64decode(
                     base64_authorization_header,
@@ -51,7 +51,7 @@ class BasicAuth(Auth):
     ) -> Tuple[str, str]:
         """Returns user email & password from Base64 decoded val.
         """
-        if type(decoded_base64_authorization_header) == str:
+        if type(decoded_base64_authorization_header) is str:
             pttn = r'(?P<user>[^:]+):(?P<password>.+)'
             match_fld = re.fullmatch(
                 pttn,
@@ -67,7 +67,7 @@ class BasicAuth(Auth):
             self, user_email: str, user_pwd: str) -> TypeVar('User'):
         """Returns user instance associated with user_email & user_pwd.
         """
-        if type(user_email) == str and type(user_pwd) == str:
+        if type(user_email) is str and type(user_pwd) is str:
             try:
                 usrs = User.search({'email': user_email})
             except Exception:
