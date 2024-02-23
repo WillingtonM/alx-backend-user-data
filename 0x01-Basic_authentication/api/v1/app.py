@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Route module for the API
+""" Route module for the API
 """
 from os import getenv
 from api.v1.views import app_views
@@ -15,10 +14,12 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
-auth_type = getenv('AUTH_TYPE', 'auth')
-if auth_type == 'auth':
+
+if os.getenv("AUTH_TYPE") == "auth":
+    from api.v1.auth.auth import Auth
     auth = Auth()
-if auth_type == 'basic_auth':
+elif os.getenv("AUTH_TYPE") == "basic_auth":
+    from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
 
 
@@ -30,8 +31,9 @@ def unauthorized(error) -> str:
 
 
 @app.errorhandler(403)
-def forbidden(error) -> str:
-    """Forbidden handler.
+def not_allowed(error) -> str:
+    """
+    Not allowed access handler
     """
     return jsonify({"error": "Forbidden"}), 403
 

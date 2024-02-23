@@ -8,17 +8,16 @@ from api.v1.views import app_views
 @app_views.route('/status', methods=['GET'], strict_slashes=False)
 def status() -> str:
     """
-    GET /api/v1/status
-    Return: status of API
+    GET /api/v1/status.
+    Return: status of API.
     """
     return jsonify({"status": "OK"})
 
 
 @app_views.route('/stats/', strict_slashes=False)
 def stats() -> str:
-    """
-    GET /api/v1/stats
-    Return: number of each objects
+    """ GET /api/v1/stats.
+    Return: number of each of the objects.
     """
     from models.user import User
     stats = {}
@@ -28,15 +27,13 @@ def stats() -> str:
 
 @app_views.route('/unauthorized', methods=['GET'], strict_slashes=False)
 def not_permitted() -> None:
-    """
-    Handles unathorized request
+    """ Handles the unathorized request.
     """
     abort(401)
 
 
 @app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
 def forbidden() -> None:
-    """
-    Handles forbidden request
+    """ Handles the forbidden request.
     """
     abort(403)
