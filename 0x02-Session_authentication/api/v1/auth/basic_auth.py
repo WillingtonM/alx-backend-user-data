@@ -11,7 +11,7 @@ import base64
 
 class BasicAuth(Auth):
     """
-    Contains BasicAuth implementation.
+    Contains BasicAuth implementation
     """
 
     def extract_base64_authorization_header(
