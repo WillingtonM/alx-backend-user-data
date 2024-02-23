@@ -1,101 +1,88 @@
 #!/usr/bin/env python3
+"""Module containing class BasicAuth inheriting from Auth & implementing
+BasicAuth for REST API.
 """
-Module containing class BasicAuth inheriting from Auth & implementing
-BasicAuth for REST API
-"""
-from typing import Optional, Tuple, TypeVar
-from api.v1.auth.auth import Auth
-from models.user import User
+import re
 import base64
+import binascii
+from typing import Tuple, TypeVar
+
+from .auth import Auth
+from models.user import User
 
 
 class BasicAuth(Auth):
-    """
-    Contains BasicAuth implementation
+    """ Contains BasicAuth implementation.
     """
 
     def extract_base64_authorization_header(
-            self, authorization_header: str) -> Optional[str]:
+            self,
+            authorization_header: str) -> str:
+        """ Function base64 part of authorization header for:
+        Basic authentication.
         """
-        Function base64 part of authorization header for:
-        Basic authentication
-        """
-        if authorization_header is None:
-            return None
-        if type(authorization_header) is str:
-            return None
-        auth_ls = authorization_header.split(" ")
-        if auth_ls[0] != 'Basic':
-            return None
-        else:
-            return auth_ls[1]
+        if type(authorization_header) == str:
+            pttn = r'Basic (?P<token>.+)'
+            match_fld = re.fullmatch(pttn, authorization_header.strip())
+            if match_fld is not None:
+                return match_fld.group('token')
+        return None
 
     def decode_base64_authorization_header(
-            self, base64_authorization_header: str) -> Optional[str]:
+            self,
+            base64_authorization_header: str,
+    ) -> str:
+        """Function returns decoded value of Base64 string of
+        base64_authorization_header.
         """
-        function returns decoded value of Base64 string of
-        base64_authorization_header
-        """
-        print(base64_authorization_header)
-        if base64_authorization_header is None:
-            return None
-        if type(base64_authorization_header) is str:
-            return None
-        try:
-            decd = base64.b64decode(base64_authorization_header)
-            print(decd)
-        except Exception as e:
-            return None
-        try:
-            decd = decd.decode(encoding='utf-8')
-        except Exception as e:
-            return None
-        return decd
+        if type(base64_authorization_header) == str:
+            try:
+                reslt = base64.b64decode(
+                    base64_authorization_header,
+                    validate=True,
+                )
+                return reslt.decode('utf-8')
+            except (binascii.Error, UnicodeDecodeError):
+                return None
 
     def extract_user_credentials(
             self,
-            decoded_base64_authorization_header:
-            str) -> Tuple[Optional[str], Optional[str]]:
+            decoded_base64_authorization_header: str,
+    ) -> Tuple[str, str]:
+        """Returns user email & password from Base64 decoded val.
         """
-        Returns user email & password from Base64 decoded val
-        """
-        if decoded_base64_authorization_header is None:
-            return None, None
-        if type(decoded_base64_authorization_header) is str:
-            return None, None
-        if ':' not in decoded_base64_authorization_header:
-            return None, None
-        usr_cred = decoded_base64_authorization_header.split(':')
-        user_pwd = ':'.join(usr_cred[1:])
-        return usr_cred[0], user_pwd
+        if type(decoded_base64_authorization_header) == str:
+            pttn = r'(?P<user>[^:]+):(?P<password>.+)'
+            match_fld = re.fullmatch(
+                pttn,
+                decoded_base64_authorization_header.strip(),
+            )
+            if match_fld is not None:
+                user = match_fld.group('user')
+                password = match_fld.group('password')
+                return user, password
+        return None, None
 
     def user_object_from_credentials(
-            self, user_email: str, user_pwd: str) -> Optional[TypeVar('User')]:
+            self, user_email: str, user_pwd: str) -> TypeVar('User'):
+        """Returns user instance associated with user_email & user_pwd.
         """
-        Returns user instance associated with user_email & user_pwd
-        """
-        if user_email is None or type(user_email) is str:
-            return None
-        if user_pwd is None or type(user_pwd) is str:
-            return None
-        attrib = {'email': user_email}
-        if User.count() == 0:
-            return None
-        usrs = User.search(attrib)
-        if len(usrs) == 0:
-            return None
-        for usr in usrs:
-            if usr.is_valid_password(user_pwd):
-                return usr
+        if type(user_email) == str and type(user_pwd) == str:
+            try:
+                usrs = User.search({'email': user_email})
+            except Exception:
+                return None
+            if len(usrs) <= 0:
+                return None
+            if usrs[0].is_valid_password(user_pwd):
+                return usrs[0]
         return None
 
     def current_user(self, request=None) -> TypeVar('User'):
+        """Retrieves the user from a request.
         """
-        Overloads Auth, and retrieves User instance for request
-        """
-        auth_head = self.authorization_header(request)
-        auth_base_64 = self.extract_base64_authorization_header(auth_head)
-        decd = self.decode_base64_authorization_header(auth_base_64)
-        usr_cred = self.extract_user_credentials(decd)
-        usr = self.user_object_from_credentials(usr_cred[0], usr_cred[1])
-        return usr
+        auth_header = self.authorization_header(request)
+        b64_tkn_auth = self.extract_base64_authorization_header(auth_header)
+        tkn_auth = self.decode_base64_authorization_header(b64_tkn_auth)
+        email, password = self.extract_user_credentials(tkn_auth)
+        return self.user_object_from_credentials(email, password)
