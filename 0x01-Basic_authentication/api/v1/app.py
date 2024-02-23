@@ -9,18 +9,19 @@ import os
 from api.v1.auth.auth import Auth
 from api.v1.auth.basic_auth import BasicAuth
 
-
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
-auth = None
+authentic = None
+authentic = os.getenv('AUTH_TYPE')
 
-if os.getenv("AUTH_TYPE") == "auth":
-    from api.v1.auth.auth import Auth
-    auth = Auth()
-elif os.getenv("AUTH_TYPE") == "basic_auth":
-    from api.v1.auth.basic_auth import BasicAuth
-    auth = BasicAuth()
+if authentic:
+    if authentic == 'basic_auth':
+        from api.v1.auth.basic_auth import BasicAuth
+        authentic = BasicAuth()
+    elif authentic != 'basic_auth':
+        from api.v1.auth.auth import Auth
+        authentic = Auth()
 
 
 @app.errorhandler(401)
