@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
-"""
-Session authentication route handlers
+""" Session authentication route handlers.
 """
 from werkzeug import exceptions
 from api.v1.views import app_views
 from models.user import User
 from flask import jsonify, request
-from os import abort, environ, getenv
+from os import abort, getenv
 
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def session_login() -> str:
-    """ POST /api/v1/auth/session/login
-    Return user instance, 400 if missing
+    """ Return user instance, 400 if missing.
     """
     usr_email = request.form.get('email', None)
     usr_pass = request.form.get('password', None)
@@ -41,14 +39,10 @@ def session_login() -> str:
     return usr_dict
 
 
-@app_views.route(
-    '/auth_session/logout',
-    methods=['DELETE'],
-    strict_slashes=False)
+@app_views.route('/auth_session/logout', methods=['DELETE'],
+                 strict_slashes=False)
 def session_logout() -> str:
-    """ DELETE /api/v1/auth/session/logout
-    Returns deleted json (if correctly done)
-    404 if fails
+    """ Returns deleted json (if correctly done) 404 if fails.
     """
     from api.v1.app import auth
     if auth.destroy_session(request):

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" Session Authentication
+""" Session Authentication.
 """
 from typing import Dict
 from flask.globals import session
@@ -9,12 +9,12 @@ import uuid
 
 
 class SessionAuth(Auth):
-    """ Session class inherits Auth
+    """ Session class inherits auth.
     """
     user_id_by_session_id: Dict[str, str] = {}
 
     def create_session(self, user_id: str = None) -> str:
-        """ Generator: Session ID
+        """ Generator: session id.
         """
         if user_id is None or not isinstance(user_id, str):
             return None
@@ -23,14 +23,14 @@ class SessionAuth(Auth):
         return sess_id
 
     def user_id_for_session_id(self, session_id: str = None) -> str:
-        """ Returns session_id based on user_id
+        """ Returns session_id based on user_id.
         """
         if session_id is None or not isinstance(session_id, str):
             return None
         return self.user_id_by_session_id.get(session_id, None)
 
     def current_user(self, request=None):
-        """ Returns user based cookie value
+        """ Returns user based cookie value.
         """
         cookie = self.session_cookie(request)
         sess_usr_id = self.user_id_for_session_id(cookie)
@@ -38,7 +38,7 @@ class SessionAuth(Auth):
         return usr_id
 
     def destroy_session(self, request=None):
-        """ Destroys user session
+        """ Destroys user session.
         """
         cookie_info = self.session_cookie(request)
         if cookie_info is None:
