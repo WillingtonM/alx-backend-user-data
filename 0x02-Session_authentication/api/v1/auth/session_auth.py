@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
-"""
-Session Authentication
+""" Session Authentication
 """
 from typing import Dict
 from flask.globals import session
@@ -10,7 +9,8 @@ import uuid
 
 
 class SessionAuth(Auth):
-    """ Session class inherits Auth """
+    """ Session class inherits Auth
+    """
     user_id_by_session_id: Dict[str, str] = {}
 
     def create_session(self, user_id: str = None) -> str:
