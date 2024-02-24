@@ -22,7 +22,7 @@ class Auth():
             excluded_paths += '/'
 
         astrcks = [strs[:-1]
-                     for strs in excluded_paths if strs[-1] == '*']
+                   for strs in excluded_paths if strs[-1] == '*']
 
         for strs in astrcks:
             if path.startswith(strs):

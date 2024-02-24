@@ -53,4 +53,3 @@ class SessionDBAuth(SessionExpAuth):
         except Exception:
             return False
         return True
-    
