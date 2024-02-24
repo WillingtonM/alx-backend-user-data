@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-""" class: Session Expiration
+""" Class: session expiration.
 """
 from os import getenv
 from datetime import datetime, timedelta, timedelta
@@ -7,11 +7,11 @@ from api.v1.auth.session_auth import SessionAuth
 
 
 class SessionExpAuth(SessionAuth):
-    """ Session Expiration authentication
+    """ Session expiration authentication.
     """
 
     def __init__(self):
-        """ Initialization
+        """ Initialization class.
         """
         try:
             sess_duration = int(getenv('SESSION_DURATION'))
@@ -20,7 +20,7 @@ class SessionExpAuth(SessionAuth):
         self.session_duration = sess_duration
 
     def create_session(self, user_id=None):
-        """ Generator of Session ID
+        """ Generator of session id.
         """
         sess_id = super().create_session(user_id)
         if sess_id is None:
@@ -30,7 +30,7 @@ class SessionExpAuth(SessionAuth):
         return sess_id
 
     def user_id_for_session_id(self, session_id=None):
-        """ Returns user_id for session_id
+        """ Returns user_id for session_id.
         """
         if session_id is None:
             return None
