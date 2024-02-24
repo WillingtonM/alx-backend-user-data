@@ -79,7 +79,8 @@ class BasicAuth(Auth):
         return None
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """ Overloads Basic authentication """
+        """ Overloads Basic authentication
+        """
         header_auth = self.authorization_header(request)
         if not header_auth:
             return None
